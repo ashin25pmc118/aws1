@@ -39,7 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'gallery',
+    'storages',  # Added correctly here
 ]
+
+AWS_ACCESS_KEY_ID = 'AKIA5242WNW2JCXL5SHO'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'pixelgram-uploads12'
+AWS_S3_REGION_NAME = 'us-east-1'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,11 +84,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '123456789',
+        'HOST': 'database-1.cox6u6ametie.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -119,7 +130,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-MEDIA_URL = '/media/'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = 'home'
