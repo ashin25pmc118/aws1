@@ -81,15 +81,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+import os
 
+# Replace the existing DATABASES block with this:
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '123456789',
-        'HOST': 'database-1.cox6u6ametie.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',  # Recommended for AWS RDS
+        'NAME': os.environ.get('postgres'),          # Your RDS Database Name
+        'USER': os.environ.get('postgres'),          # Your RDS Master Username
+        'PASSWORD': os.environ.get('123456789'),  # Your RDS Master Password
+        'HOST': os.environ.get('database-1.cox6u6ametie.us-east-1.rds.amazonaws.com'),          # Your RDS Endpoint (e.g., mydb.cxyz.us-east-1.rds.amazonaws.com)
+        'PORT': '5432',                             # Default port for PostgreSQL
     }
 }
 
