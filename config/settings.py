@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'gallery',
 ]
 
@@ -123,3 +124,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# File upload settings (105 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 105 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 105 * 1024 * 1024

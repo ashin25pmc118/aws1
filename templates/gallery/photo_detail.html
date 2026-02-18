@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
 <div class="container" style="margin-top: 80px;">
@@ -15,7 +16,7 @@
                             class="card-header d-flex justify-content-between align-items-center bg-white border-bottom">
                             <div class="d-flex align-items-center">
                                 <div style="width: 32px; height: 32px; margin-right: 10px;">
-                                    <img src="{{ photo.user.profile.image.url }}" class="rounded-circle"
+                                    <img src="{{ photo.author_image }}" class="rounded-circle"
                                         style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                                 <span class="fw-bold">{{ photo.user.username }}</span>
@@ -41,6 +42,30 @@
                             </p>
                             <p class="text-muted" style="font-size: 0.8rem;">{{ photo.created_at|date:"F d, Y" }}</p>
                             <h5 class="mt-3">{{ photo.title }}</h5>
+
+                            <hr>
+
+                            <div class="comments-list">
+                                {% for comment in photo.comments.all %}
+                                <div class="mb-2 d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="fw-bold" style="font-size: 0.9rem;">{{ comment.user.username
+                                            }}</span>
+                                        <span style="font-size: 0.9rem;">{{ comment.text }}</span>
+                                        <div class="text-muted" style="font-size: 0.7rem;">{{
+                                            comment.created_at|naturaltime }}</div>
+                                    </div>
+                                    {% if user == comment.user or user == photo.user %}
+                                    <a href="{% url 'delete_comment' comment.pk %}"
+                                        class="text-danger text-decoration-none" style="font-size: 0.8rem;">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% empty %}
+                                <p class="text-muted text-center py-3">No comments yet. Be the first to comment!</p>
+                                {% endfor %}
+                            </div>
                         </div>
 
                         <div class="card-footer bg-white border-top">
@@ -61,6 +86,14 @@
                                     style="font-size: 1.5rem; cursor: pointer; margin-left: 10px;"></i>
                             </div>
                             <p class="fw-bold mb-0">{{ photo.total_likes }} likes</p>
+
+                            <form action="{% url 'add_comment' photo.pk %}" method="POST"
+                                class="mt-3 d-flex align-items-center">
+                                {% csrf_token %}
+                                <input type="text" name="text" class="form-control" placeholder="Add a comment..."
+                                    required>
+                                <button type="submit" class="btn btn-primary ms-2">Post</button>
+                            </form>
                         </div>
                     </div>
                 </div>

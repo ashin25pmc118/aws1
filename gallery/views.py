@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Photo, Profile
-from .forms import PhotoForm, UserUpdateForm, ProfileUpdateForm
+from .models import Photo, Profile, Comment
+from .forms import PhotoForm, UserUpdateForm, ProfileUpdateForm, CustomUserCreationForm, CommentForm
 
 def home(request):
     photos = Photo.objects.all().order_by('-created_at')
@@ -19,20 +18,17 @@ def my_gallery(request):
 def edit_profile(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
             messages.success(request, f'Your account has been updated!')
             return redirect('my_gallery')
     else:
+        profile, created = Profile.objects.get_or_create(user=request.user)
         u_form = UserUpdateForm(instance=request.user)
-        try:
-            p_form = ProfileUpdateForm(instance=request.user.profile)
-        except Profile.DoesNotExist:
-             # Just in case the signal didn't catch it yet (though it should have)
-            Profile.objects.create(user=request.user)
-            p_form = ProfileUpdateForm(instance=request.user.profile)
+        p_form = ProfileUpdateForm(instance=profile)
 
     context = {
         'u_form': u_form,
@@ -43,7 +39,7 @@ def edit_profile(request):
 
 def signup(request):
     if request.method == 'POST':
-        u_form = UserCreationForm(request.POST)
+        u_form = CustomUserCreationForm(request.POST)
         p_form = ProfileUpdateForm(request.POST, request.FILES)
         if u_form.is_valid() and p_form.is_valid():
             user = u_form.save()
@@ -53,7 +49,7 @@ def signup(request):
             login(request, user)
             return redirect('home')
     else:
-        u_form = UserCreationForm()
+        u_form = CustomUserCreationForm()
         p_form = ProfileUpdateForm()
     return render(request, 'registration/signup.html', {'u_form': u_form, 'p_form': p_form})
 
@@ -108,3 +104,24 @@ def like_photo(request, pk):
     else:
         photo.likes.add(request.user)
     return redirect('home')
+
+@login_required
+def add_comment(request, pk):
+    photo = get_object_or_404(Photo, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.photo = photo
+            comment.user = request.user
+            comment.save()
+            return redirect('photo_detail', pk=pk)
+    return redirect('photo_detail', pk=pk)
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    photo_pk = comment.photo.pk
+    if request.user == comment.user or request.user == comment.photo.user:
+        comment.delete()
+    return redirect('photo_detail', pk=photo_pk)

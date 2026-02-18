@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
 
 class Photo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='photos')
@@ -13,6 +14,13 @@ class Photo(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
+    @property
+    def author_image(self):
+        try:
+            return self.user.profile.image.url
+        except ObjectDoesNotExist:
+            return '/media/default.jpg'
 
     def __str__(self):
         return self.title
@@ -35,3 +43,12 @@ def save_profile(sender, instance, **kwargs):
         instance.profile.save()
     except Profile.DoesNotExist:
         Profile.objects.create(user=instance)
+
+class Comment(models.Model):
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Comment by {self.user.username} on {self.photo.title}'

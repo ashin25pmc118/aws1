@@ -1,25 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="margin-top: 80px;">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white text-center fw-bold py-3">Create New Post</div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-images" style="font-size: 3rem;"></i>
-                        <p class="lead">Drag photos here</p>
-                    </div>
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary">Share</button>
-                            <a href="{% url 'home' %}" class="btn btn-link text-decoration-none text-muted">Cancel</a>
+<style>
+    /* Custom Styling for the PixelGram Look */
+    .auth-container {
+        margin-top: 3rem;
+    }
+
+    .auth-card {
+        border: 1px solid #dbdbdb;
+        border-radius: 1px;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    form input[type="text"],
+    form input[type="file"] {
+        width: 100%;
+        padding: 9px 7px;
+        margin-bottom: 8px;
+        background: #fafafa;
+        border: 1px solid #dbdbdb;
+        border-radius: 3px;
+        font-size: 14px;
+    }
+
+    /* Hide labels as per style, but ensure clarity */
+    form label {
+        display: none;
+    }
+
+    .btn-signup {
+        background-color: #0095f6;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        padding: 5px 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .btn-signup:hover {
+        background-color: #1877f2;
+    }
+
+    .upload-area {
+        border: 2px dashed #dbdbdb;
+        border-radius: 8px;
+        padding: 40px 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        background-color: #fafafa;
+        transition: border-color 0.3s;
+    }
+
+    .upload-area:hover {
+        border-color: #a8a8a8;
+    }
+
+    .upload-icon {
+        font-size: 4rem;
+        color: #262626;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="row justify-content-center auth-container">
+    <div class="col-md-6">
+        <div class="card auth-card shadow-sm">
+            <div class="card-body">
+                <h3 class="text-center mb-4 fw-light">Create New Post</h3>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="upload-area">
+                        <i class="bi bi-images upload-icon"></i>
+                        <h5 class="fw-light mb-3">Select photos and videos</h5>
+                        <div class="mb-3">
+                            <!-- Helper text since label is hidden -->
+                            {{ form.image }}
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.title }}
+                        <!-- Title field has placeholder "Write a caption..." set in forms.py -->
+                    </div>
+
+                    <div class="d-grid mt-3">
+                        <button class="btn btn-signup" type="submit">Share</button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'home' %}" class="text-decoration-none text-muted small fw-bold">Cancel</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
