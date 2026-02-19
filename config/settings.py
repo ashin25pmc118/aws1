@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-a2to)3(a9httq6^mz!ad0%53yufltn%ub9kqo#l##c0$=tf-eb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -39,15 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'gallery',
-    'storages',  # Added correctly here
+    # 'storages',  # Added correctly here
 ]
 
-AWS_ACCESS_KEY_ID = 'AKIA5242WNW2JCXL5SHO'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'pixelgram-uploads12'
-AWS_S3_REGION_NAME = 'us-east-1'
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
+# AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY'
+# AWS_STORAGE_BUCKET_NAME = 'pixelgram-uploads12'
+# AWS_S3_REGION_NAME = 'us-east-1'
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,12 +86,8 @@ import os
 # Replace the existing DATABASES block with this:
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Recommended for AWS RDS
-        'NAME': os.environ.get('postgres'),          # Your RDS Database Name
-        'USER': os.environ.get('postgres'),          # Your RDS Master Username
-        'PASSWORD': os.environ.get('123456789'),  # Your RDS Master Password
-        'HOST': os.environ.get('database-1.cox6u6ametie.us-east-1.rds.amazonaws.com'),          # Your RDS Endpoint (e.g., mydb.cxyz.us-east-1.rds.amazonaws.com)
-        'PORT': '5432',                             # Default port for PostgreSQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -132,7 +128,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = 'home'
